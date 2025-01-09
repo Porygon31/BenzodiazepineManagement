@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35507.96 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BenzodiazepineManagement", "BenzodiazepineManagement\BenzodiazepineManagement.csproj", "{A8A708E2-373E-4BAE-8E26-F440E1457E1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8A708E2-373E-4BAE-8E26-F440E1457E1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8A708E2-373E-4BAE-8E26-F440E1457E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8A708E2-373E-4BAE-8E26-F440E1457E1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8A708E2-373E-4BAE-8E26-F440E1457E1A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05B5D487-2FA6-43FE-BE3E-5B43CDA4A1B4}
+	EndGlobalSection
+EndGlobal
