@@ -14,7 +14,7 @@ namespace BenzodiazepineManagement.Forms
 {
     public partial class FormAddBenzodiazepine : Form
     {
-        private DatabaseManager _databaseManager;
+        private DatabaseManagerBase _databaseManager;
         private Benzodiazepine _benzodiazepine;
 
         // Liste des propriétés pharmacologiques disponibles
@@ -38,7 +38,7 @@ namespace BenzodiazepineManagement.Forms
             "Sevrage alcoolique"
         };
 
-        public FormAddBenzodiazepine(DatabaseManager databaseManager)
+        public FormAddBenzodiazepine(DatabaseManagerBase databaseManager)
         {
             InitializeComponent();
             _databaseManager = databaseManager;
@@ -108,7 +108,7 @@ namespace BenzodiazepineManagement.Forms
         /// <summary>
         /// Événement déclenché lors du clic sur le bouton "Enregistrer".
         /// </summary>
-        private void btnSave_Click(object sender, EventArgs e)
+        private async Task btnSave_ClickAsync(object sender, EventArgs e)
         {
             // Validation des champs obligatoires
             if (string.IsNullOrWhiteSpace(txtOfficialName.Text) || string.IsNullOrWhiteSpace(txtMoleculeName.Text))
@@ -173,7 +173,9 @@ namespace BenzodiazepineManagement.Forms
             }
 
             // Enregistrer dans la base de données
-            _databaseManager.AddBenzodiazepine(_benzodiazepine);
+
+            object saveResult = await _databaseManager.AddBenzodiazepineAsync(_benzodiazepine);
+
 
             DialogResult = DialogResult.OK;
             Close();
@@ -215,6 +217,76 @@ namespace BenzodiazepineManagement.Forms
             bool isRange = checkBoxActionDurationIsRange.Checked;
             numericActionDurationMax.Visible = isRange;
             lblActionDurationSeparator.Visible = isRange;
+        }
+        private async void btnSave_Click(object sender, EventArgs e)
+        {
+            // Validation des champs obligatoires
+            if (string.IsNullOrWhiteSpace(txtOfficialName.Text) || string.IsNullOrWhiteSpace(txtMoleculeName.Text))
+            {
+                MessageBox.Show("Veuillez remplir les champs obligatoires.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Mise à jour de l'objet benzodiazépine
+            _benzodiazepine.OfficialName = txtOfficialName.Text;
+            _benzodiazepine.MoleculeName = txtMoleculeName.Text;
+
+            // HalfLife
+            _benzodiazepine.HalfLife = new ValueRange
+            {
+                IsRange = checkBoxHalfLifeIsRange.Checked,
+                Value = (double)numericHalfLife.Value,
+                MaxValue = checkBoxHalfLifeIsRange.Checked ? (double?)numericHalfLifeMax.Value : null
+            };
+
+            // OnsetTime
+            _benzodiazepine.OnsetTime = new ValueRange
+            {
+                IsRange = checkBoxOnsetTimeIsRange.Checked,
+                Value = (double)numericOnsetTime.Value,
+                MaxValue = checkBoxOnsetTimeIsRange.Checked ? (double?)numericOnsetTimeMax.Value : null
+            };
+
+            // Bioavailability
+            _benzodiazepine.Bioavailability = new ValueRange
+            {
+                IsRange = checkBoxBioavailabilityIsRange.Checked,
+                Value = (double)numericBioavailability.Value,
+                MaxValue = checkBoxBioavailabilityIsRange.Checked ? (double?)numericBioavailabilityMax.Value : null
+            };
+
+            // ActionDurationHours
+            _benzodiazepine.ActionDurationHours = new ValueRange
+            {
+                IsRange = checkBoxActionDurationIsRange.Checked,
+                Value = (double)numericActionDuration.Value,
+                MaxValue = checkBoxActionDurationIsRange.Checked ? (double?)numericActionDurationMax.Value : null
+            };
+
+            _benzodiazepine.Metabolism = txtMetabolism.Text;
+            _benzodiazepine.Elimination = txtElimination.Text;
+            _benzodiazepine.Dosage = txtDosage.Text;
+            _benzodiazepine.ImagePath = txtImagePath.Text;
+
+            // Récupérer les propriétés pharmacologiques sélectionnées
+            _benzodiazepine.PharmacologicalProperties = new List<PharmacologicalProperty>();
+            foreach (var item in checkedListBoxProperties.CheckedItems)
+            {
+                _benzodiazepine.PharmacologicalProperties.Add((PharmacologicalProperty)item);
+            }
+
+            // Récupérer les indications thérapeutiques sélectionnées
+            _benzodiazepine.TherapeuticIndications = new List<string>();
+            foreach (var item in checkedListBoxIndications.CheckedItems)
+            {
+                _benzodiazepine.TherapeuticIndications.Add(item.ToString());
+            }
+
+            // Enregistrer dans la base de données
+            await _databaseManager.AddBenzodiazepineAsync(_benzodiazepine);
+
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }
