@@ -320,7 +320,6 @@
             btnSave.Text = "Sauvegarder";
             btnSave.UseVisualStyleBackColor = true;
             btnSave.Click += btnSave_Click;
-            
             // 
             // checkedListBoxIndications
             // 
@@ -474,15 +473,6 @@
             ((System.ComponentModel.ISupportInitialize)numericHalfLife).EndInit();
             ResumeLayout(false);
             PerformLayout();
-        }
-
-
-
-#pragma warning disable CS1998 // Cette méthode async n'a pas d'opérateur 'await' et elle s'exécutera de façon synchrone
-        private async Task btnSave_ClickAsync(object sender, EventArgs e)
-#pragma warning restore CS1998 // Cette méthode async n'a pas d'opérateur 'await' et elle s'exécutera de façon synchrone
-        {
-            // Your async code here
         }
 
         #endregion
