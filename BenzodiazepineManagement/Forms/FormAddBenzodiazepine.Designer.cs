@@ -181,7 +181,7 @@
             btnSave.TabIndex = 14;
             btnSave.Text = "Sauvegarder";
             btnSave.UseVisualStyleBackColor = true;
-            btnSave.Click += btnSave_Click;
+            btnSave.Click += btnSave_ClickAsync;
             // 
             // btnCancel
             // 

@@ -16,10 +16,10 @@ namespace BenzodiazepineManagement.Forms
     /// </summary>
     public partial class FormCompareBenzodiazepines : Form
     {
-        private DatabaseManager _databaseManager;
+        private DatabaseManagerBase _databaseManager;
         private List<Benzodiazepine> _benzodiazepines;
 
-        public FormCompareBenzodiazepines(DatabaseManager databaseManager)
+        public FormCompareBenzodiazepines(DatabaseManagerBase databaseManager)
         {
             InitializeComponent();
             _databaseManager = databaseManager;
@@ -28,9 +28,9 @@ namespace BenzodiazepineManagement.Forms
         /// <summary>
         /// Événement déclenché lors du chargement de la fenêtre.
         /// </summary>
-        private void FormCompareBenzodiazepines_Load(object sender, EventArgs e)
+        private async void FormCompareBenzodiazepines_Load(object sender, EventArgs e)
         {
-            _benzodiazepines = _databaseManager.GetAllBenzodiazepines();
+            _benzodiazepines = await _databaseManager.GetAllBenzodiazepinesAsync();
 
             // Remplir les ComboBox avec les benzodiazépines
             comboBoxBenzo1.DataSource = new List<Benzodiazepine>(_benzodiazepines);
