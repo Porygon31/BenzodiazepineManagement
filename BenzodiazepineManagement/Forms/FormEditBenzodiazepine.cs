@@ -13,7 +13,7 @@ namespace BenzodiazepineManagement.Forms
     /// </summary>
     public partial class FormEditBenzodiazepine : Form
     {
-        private DatabaseManagerBase _databaseManager;
+        private DatabaseManager _databaseManager;
         private Benzodiazepine _benzodiazepine;
 
         // Liste des propriétés pharmacologiques disponibles
@@ -37,7 +37,7 @@ namespace BenzodiazepineManagement.Forms
             "Sevrage alcoolique"
         };
 
-        public FormEditBenzodiazepine(DatabaseManagerBase databaseManager, Benzodiazepine benzo)
+        public FormEditBenzodiazepine(DatabaseManager databaseManager, Benzodiazepine benzo)
         {
             InitializeComponent();
             _databaseManager = databaseManager;
@@ -185,7 +185,7 @@ namespace BenzodiazepineManagement.Forms
         /// <summary>
         /// Événement déclenché lors du clic sur le bouton "Enregistrer".
         /// </summary>
-        private async Task btnSave_ClickAsync(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
             // Validation des champs obligatoires
             if (string.IsNullOrWhiteSpace(txtOfficialName.Text) || string.IsNullOrWhiteSpace(txtMoleculeName.Text))
@@ -249,12 +249,13 @@ namespace BenzodiazepineManagement.Forms
                 _benzodiazepine.TherapeuticIndications.Add(item.ToString());
             }
 
-            // Mettre à jour la benzodiazépine dans la base de données
-            await _databaseManager.UpdateBenzodiazepineAsync(_benzodiazepine);
+            // Enregistrer les modifications dans la base de données
+            _databaseManager.UpdateBenzodiazepine(_benzodiazepine);
 
             DialogResult = DialogResult.OK;
             Close();
         }
+
         /// <summary>
         /// Événement déclenché lors du clic sur le bouton "Annuler".
         /// </summary>

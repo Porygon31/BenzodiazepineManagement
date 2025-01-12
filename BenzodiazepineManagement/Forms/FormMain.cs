@@ -8,7 +8,7 @@ namespace BenzodiazepineManagement
 {
     public partial class FormMain : Form
     {
-        private DatabaseManagerBase _databaseManager;
+        private DatabaseManager _databaseManager;
         private List<Benzodiazepine> _benzodiazepines;
 
         public FormMain()
@@ -25,9 +25,9 @@ namespace BenzodiazepineManagement
         /// <summary>
         /// Charge les benzodiazépines depuis la base de données et les affiche dans le DataGridView.
         /// </summary>
-        private async void LoadBenzodiazepines()
+        private void LoadBenzodiazepines()
         {
-            _benzodiazepines = await _databaseManager.GetAllBenzodiazepinesAsync();
+            _benzodiazepines = _databaseManager.GetAllBenzodiazepines();
 
             dataGridViewBenzos.DataSource = null;
             dataGridViewBenzos.AutoGenerateColumns = false;
@@ -190,7 +190,7 @@ namespace BenzodiazepineManagement
                 var result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer {selectedBenzo.OfficialName} ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (result == DialogResult.Yes)
                 {
-                    _databaseManager.DeleteBenzodiazepineAsync(selectedBenzo.Id);
+                    _databaseManager.DeleteBenzodiazepine(selectedBenzo.Id);
                     LoadBenzodiazepines();
                 }
             }
