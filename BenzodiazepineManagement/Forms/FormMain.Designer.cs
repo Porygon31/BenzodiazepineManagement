@@ -73,7 +73,7 @@
             // 
             // btnEdit
             // 
-            btnEdit.Location = new Point(1326, 405);
+            btnEdit.Location = new Point(1731, 593);
             btnEdit.Name = "btnEdit";
             btnEdit.Size = new Size(164, 42);
             btnEdit.TabIndex = 2;
@@ -83,7 +83,7 @@
             // 
             // btnDelete
             // 
-            btnDelete.Location = new Point(1326, 560);
+            btnDelete.Location = new Point(1731, 748);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(164, 42);
             btnDelete.TabIndex = 3;
@@ -93,7 +93,7 @@
             // 
             // btnCompare
             // 
-            btnCompare.Location = new Point(1326, 479);
+            btnCompare.Location = new Point(1731, 667);
             btnCompare.Name = "btnCompare";
             btnCompare.Size = new Size(164, 42);
             btnCompare.TabIndex = 4;
@@ -103,7 +103,7 @@
             // 
             // txtSearch
             // 
-            txtSearch.Location = new Point(1302, 34);
+            txtSearch.Location = new Point(1717, 22);
             txtSearch.Name = "txtSearch";
             txtSearch.Size = new Size(188, 27);
             txtSearch.TabIndex = 5;
@@ -112,7 +112,7 @@
             // lblSearch
             // 
             lblSearch.AutoSize = true;
-            lblSearch.Location = new Point(1207, 41);
+            lblSearch.Location = new Point(1622, 29);
             lblSearch.Name = "lblSearch";
             lblSearch.Size = new Size(89, 20);
             lblSearch.TabIndex = 6;
@@ -121,7 +121,7 @@
             // lblOfficialName
             // 
             lblOfficialName.AutoSize = true;
-            lblOfficialName.Location = new Point(707, 29);
+            lblOfficialName.Location = new Point(902, 28);
             lblOfficialName.Name = "lblOfficialName";
             lblOfficialName.Size = new Size(67, 20);
             lblOfficialName.TabIndex = 7;
