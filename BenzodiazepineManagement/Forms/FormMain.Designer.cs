@@ -57,13 +57,13 @@
             dataGridViewBenzos.Location = new Point(24, 29);
             dataGridViewBenzos.Name = "dataGridViewBenzos";
             dataGridViewBenzos.RowHeadersWidth = 51;
-            dataGridViewBenzos.Size = new Size(663, 548);
+            dataGridViewBenzos.Size = new Size(872, 548);
             dataGridViewBenzos.TabIndex = 0;
             dataGridViewBenzos.SelectionChanged += dataGridViewBenzos_SelectionChanged;
             // 
             // btnAdd
             // 
-            btnAdd.Location = new Point(1326, 325);
+            btnAdd.Location = new Point(1731, 513);
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(164, 42);
             btnAdd.TabIndex = 1;
@@ -229,7 +229,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1605, 1055);
+            ClientSize = new Size(1929, 1317);
             Controls.Add(pictureBoxMolecule);
             Controls.Add(lblPharmacologicalProperties);
             Controls.Add(lblTherapeuticIndications);
