@@ -130,7 +130,7 @@
             // lblMoleculeName
             // 
             lblMoleculeName.AutoSize = true;
-            lblMoleculeName.Location = new Point(707, 87);
+            lblMoleculeName.Location = new Point(902, 86);
             lblMoleculeName.Name = "lblMoleculeName";
             lblMoleculeName.Size = new Size(144, 20);
             lblMoleculeName.TabIndex = 8;
@@ -139,7 +139,7 @@
             // lblHalfLife
             // 
             lblHalfLife.AutoSize = true;
-            lblHalfLife.Location = new Point(707, 140);
+            lblHalfLife.Location = new Point(902, 139);
             lblHalfLife.Name = "lblHalfLife";
             lblHalfLife.Size = new Size(70, 20);
             lblHalfLife.TabIndex = 9;
@@ -148,7 +148,7 @@
             // lblOnsetTime
             // 
             lblOnsetTime.AutoSize = true;
-            lblOnsetTime.Location = new Point(707, 192);
+            lblOnsetTime.Location = new Point(902, 191);
             lblOnsetTime.Name = "lblOnsetTime";
             lblOnsetTime.Size = new Size(47, 20);
             lblOnsetTime.TabIndex = 10;
@@ -157,7 +157,7 @@
             // lblBioavailability
             // 
             lblBioavailability.AutoSize = true;
-            lblBioavailability.Location = new Point(707, 225);
+            lblBioavailability.Location = new Point(902, 224);
             lblBioavailability.Name = "lblBioavailability";
             lblBioavailability.Size = new Size(88, 20);
             lblBioavailability.TabIndex = 11;
@@ -166,7 +166,7 @@
             // lblMetabolism
             // 
             lblMetabolism.AutoSize = true;
-            lblMetabolism.Location = new Point(707, 267);
+            lblMetabolism.Location = new Point(902, 266);
             lblMetabolism.Name = "lblMetabolism";
             lblMetabolism.Size = new Size(96, 20);
             lblMetabolism.TabIndex = 12;
@@ -175,7 +175,7 @@
             // lblElimination
             // 
             lblElimination.AutoSize = true;
-            lblElimination.Location = new Point(707, 294);
+            lblElimination.Location = new Point(902, 293);
             lblElimination.Name = "lblElimination";
             lblElimination.Size = new Size(93, 20);
             lblElimination.TabIndex = 13;
@@ -184,7 +184,7 @@
             // lblActionDuration
             // 
             lblActionDuration.AutoSize = true;
-            lblActionDuration.Location = new Point(707, 326);
+            lblActionDuration.Location = new Point(902, 325);
             lblActionDuration.Name = "lblActionDuration";
             lblActionDuration.Size = new Size(106, 20);
             lblActionDuration.TabIndex = 14;
@@ -193,7 +193,7 @@
             // lblDosage
             // 
             lblDosage.AutoSize = true;
-            lblDosage.Location = new Point(707, 368);
+            lblDosage.Location = new Point(902, 367);
             lblDosage.Name = "lblDosage";
             lblDosage.Size = new Size(60, 20);
             lblDosage.TabIndex = 15;
@@ -202,7 +202,7 @@
             // lblTherapeuticIndications
             // 
             lblTherapeuticIndications.AutoSize = true;
-            lblTherapeuticIndications.Location = new Point(707, 399);
+            lblTherapeuticIndications.Location = new Point(902, 398);
             lblTherapeuticIndications.Name = "lblTherapeuticIndications";
             lblTherapeuticIndications.Size = new Size(175, 20);
             lblTherapeuticIndications.TabIndex = 16;
@@ -211,7 +211,7 @@
             // lblPharmacologicalProperties
             // 
             lblPharmacologicalProperties.AutoSize = true;
-            lblPharmacologicalProperties.Location = new Point(707, 439);
+            lblPharmacologicalProperties.Location = new Point(902, 438);
             lblPharmacologicalProperties.Name = "lblPharmacologicalProperties";
             lblPharmacologicalProperties.Size = new Size(198, 20);
             lblPharmacologicalProperties.TabIndex = 17;
@@ -221,7 +221,7 @@
             // 
             pictureBoxMolecule.Location = new Point(24, 583);
             pictureBoxMolecule.Name = "pictureBoxMolecule";
-            pictureBoxMolecule.Size = new Size(663, 460);
+            pictureBoxMolecule.Size = new Size(876, 722);
             pictureBoxMolecule.TabIndex = 18;
             pictureBoxMolecule.TabStop = false;
             // 
