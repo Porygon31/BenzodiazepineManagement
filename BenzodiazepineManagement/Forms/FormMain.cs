@@ -23,7 +23,7 @@ namespace BenzodiazepineManagement
         }
 
         /// <summary>
-        /// Charge les benzodiazépines depuis la base de données et les affiche dans le DataGridView.
+        /// Charge les benzodiazï¿½pines depuis la base de donnï¿½es et les affiche dans le DataGridView.
         /// </summary>
         private void LoadBenzodiazepines()
         {
@@ -43,7 +43,7 @@ namespace BenzodiazepineManagement
             dataGridViewBenzos.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "MoleculeName",
-                HeaderText = "Nom de la Molécule"
+                HeaderText = "Nom de la Molï¿½cule"
             });
 
             dataGridViewBenzos.Columns.Add(new DataGridViewTextBoxColumn
@@ -61,16 +61,16 @@ namespace BenzodiazepineManagement
             dataGridViewBenzos.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "BioavailabilityFormatted",
-                HeaderText = "Biodisponibilité"
+                HeaderText = "Biodisponibilitï¿½"
             });
 
-            // Ajoutez d'autres colonnes si nécessaire
+            // Ajoutez d'autres colonnes si nï¿½cessaire
 
             dataGridViewBenzos.DataSource = _benzodiazepines;
         }
 
         /// <summary>
-        /// Événement déclenché lors du clic sur le bouton "Ajouter".
+        /// ï¿½vï¿½nement dï¿½clenchï¿½ lors du clic sur le bouton "Ajouter".
         /// </summary>
         private void btnAdd_Click(object sender, EventArgs e)
         {
@@ -91,9 +91,9 @@ namespace BenzodiazepineManagement
         }
 
         /// <summary>
-        /// Affiche les détails de la benzodiazépine sélectionnée dans les labels correspondants.
+        /// Affiche les dï¿½tails de la benzodiazï¿½pine sï¿½lectionnï¿½e dans les labels correspondants.
         /// </summary>
-        /// <param name="benzo">La benzodiazépine à afficher.</param>
+        /// <param name="benzo">La benzodiazï¿½pine ï¿½ afficher.</param>
         private void DisplayBenzodiazepineDetails(Benzodiazepine benzo)
         {
             lblOfficialName.Text = benzo.OfficialName;
@@ -187,7 +187,7 @@ namespace BenzodiazepineManagement
             if (dataGridViewBenzos.CurrentRow != null)
             {
                 var selectedBenzo = (Benzodiazepine)dataGridViewBenzos.CurrentRow.DataBoundItem;
-                var result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer {selectedBenzo.OfficialName} ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                var result = MessageBox.Show($"ï¿½tes-vous sï¿½r de vouloir supprimer {selectedBenzo.OfficialName} ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (result == DialogResult.Yes)
                 {
                     _databaseManager.DeleteBenzodiazepine(selectedBenzo.Id);
@@ -211,6 +211,15 @@ namespace BenzodiazepineManagement
             ).ToList();
 
             dataGridViewBenzos.DataSource = filteredList;
+        }
+
+        /// <summary>
+        /// Ouvre le gestionnaire d'ordonnances
+        /// </summary>
+        private void btnPrescriptions_Click(object sender, EventArgs e)
+        {
+            var prescriptionForm = new FormPrescriptionMain(_databaseManager);
+            prescriptionForm.ShowDialog();
         }
     }
 }

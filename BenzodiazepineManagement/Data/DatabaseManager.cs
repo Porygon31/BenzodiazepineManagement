@@ -46,6 +46,57 @@ namespace BenzodiazepineManagement.Data
                     TherapeuticIndications TEXT,
                     Dosage TEXT,
                     ImagePath TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS Patients (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Nom TEXT NOT NULL,
+                    Prenom TEXT NOT NULL,
+                    DateNaissance TEXT NOT NULL,
+                    NumeroSecuriteSociale TEXT,
+                    Adresse TEXT,
+                    CodePostal TEXT,
+                    Ville TEXT,
+                    Telephone TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS Doctors (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Nom TEXT NOT NULL,
+                    Prenom TEXT NOT NULL,
+                    NumeroRPPS TEXT NOT NULL,
+                    Specialite TEXT,
+                    Adresse TEXT,
+                    CodePostal TEXT,
+                    Ville TEXT,
+                    Telephone TEXT,
+                    Email TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS Prescriptions (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    PatientId INTEGER NOT NULL,
+                    DoctorId INTEGER NOT NULL,
+                    DatePrescription TEXT NOT NULL,
+                    Observations TEXT,
+                    Renouvelable INTEGER NOT NULL DEFAULT 0,
+                    NombreRenouvellements INTEGER,
+                    FOREIGN KEY (PatientId) REFERENCES Patients(Id),
+                    FOREIGN KEY (DoctorId) REFERENCES Doctors(Id)
+                );
+
+                CREATE TABLE IF NOT EXISTS PrescriptionItems (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    PrescriptionId INTEGER NOT NULL,
+                    BenzodiazepineId INTEGER,
+                    NomMedicament TEXT NOT NULL,
+                    Dosage TEXT NOT NULL,
+                    Posologie TEXT NOT NULL,
+                    DureeTraitementJours INTEGER NOT NULL,
+                    QuantitePrescrite INTEGER NOT NULL,
+                    Instructions TEXT,
+                    FOREIGN KEY (PrescriptionId) REFERENCES Prescriptions(Id),
+                    FOREIGN KEY (BenzodiazepineId) REFERENCES Benzodiazepines(Id)
                 );";
 
             using var command = new SQLiteCommand(createTableQuery, connection);
@@ -228,5 +279,475 @@ namespace BenzodiazepineManagement.Data
                 }
             }
         }
+
+        #region Gestion des Patients
+
+        /// <summary>
+        /// Ajoute un nouveau patient à la base de données.
+        /// </summary>
+        public void AddPatient(Patient patient)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string insertQuery = @"
+                INSERT INTO Patients (Nom, Prenom, DateNaissance, NumeroSecuriteSociale, Adresse, CodePostal, Ville, Telephone)
+                VALUES (@Nom, @Prenom, @DateNaissance, @NumeroSecuriteSociale, @Adresse, @CodePostal, @Ville, @Telephone);
+                SELECT last_insert_rowid();";
+
+            using var command = new SQLiteCommand(insertQuery, connection);
+            command.Parameters.AddWithValue("@Nom", patient.Nom);
+            command.Parameters.AddWithValue("@Prenom", patient.Prenom);
+            command.Parameters.AddWithValue("@DateNaissance", patient.DateNaissance.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@NumeroSecuriteSociale", patient.NumeroSecuriteSociale);
+            command.Parameters.AddWithValue("@Adresse", patient.Adresse);
+            command.Parameters.AddWithValue("@CodePostal", patient.CodePostal);
+            command.Parameters.AddWithValue("@Ville", patient.Ville);
+            command.Parameters.AddWithValue("@Telephone", patient.Telephone);
+
+            patient.Id = Convert.ToInt32(command.ExecuteScalar());
+        }
+
+        /// <summary>
+        /// Récupère tous les patients de la base de données.
+        /// </summary>
+        public List<Patient> GetAllPatients()
+        {
+            var patients = new List<Patient>();
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string selectQuery = "SELECT * FROM Patients ORDER BY Nom, Prenom;";
+            using var command = new SQLiteCommand(selectQuery, connection);
+            using SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                patients.Add(new Patient
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    Nom = reader["Nom"].ToString(),
+                    Prenom = reader["Prenom"].ToString(),
+                    DateNaissance = DateTime.Parse(reader["DateNaissance"].ToString()),
+                    NumeroSecuriteSociale = reader["NumeroSecuriteSociale"].ToString(),
+                    Adresse = reader["Adresse"].ToString(),
+                    CodePostal = reader["CodePostal"].ToString(),
+                    Ville = reader["Ville"].ToString(),
+                    Telephone = reader["Telephone"].ToString()
+                });
+            }
+
+            return patients;
+        }
+
+        /// <summary>
+        /// Met à jour un patient existant dans la base de données.
+        /// </summary>
+        public void UpdatePatient(Patient patient)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string updateQuery = @"
+                UPDATE Patients SET
+                    Nom = @Nom, Prenom = @Prenom, DateNaissance = @DateNaissance,
+                    NumeroSecuriteSociale = @NumeroSecuriteSociale, Adresse = @Adresse,
+                    CodePostal = @CodePostal, Ville = @Ville, Telephone = @Telephone
+                WHERE Id = @Id;";
+
+            using var command = new SQLiteCommand(updateQuery, connection);
+            command.Parameters.AddWithValue("@Nom", patient.Nom);
+            command.Parameters.AddWithValue("@Prenom", patient.Prenom);
+            command.Parameters.AddWithValue("@DateNaissance", patient.DateNaissance.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@NumeroSecuriteSociale", patient.NumeroSecuriteSociale);
+            command.Parameters.AddWithValue("@Adresse", patient.Adresse);
+            command.Parameters.AddWithValue("@CodePostal", patient.CodePostal);
+            command.Parameters.AddWithValue("@Ville", patient.Ville);
+            command.Parameters.AddWithValue("@Telephone", patient.Telephone);
+            command.Parameters.AddWithValue("@Id", patient.Id);
+
+            command.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Supprime un patient de la base de données.
+        /// </summary>
+        public void DeletePatient(int id)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string deleteQuery = "DELETE FROM Patients WHERE Id = @Id;";
+            using var command = new SQLiteCommand(deleteQuery, connection);
+            command.Parameters.AddWithValue("@Id", id);
+            command.ExecuteNonQuery();
+        }
+
+        #endregion
+
+        #region Gestion des Médecins
+
+        /// <summary>
+        /// Ajoute un nouveau médecin à la base de données.
+        /// </summary>
+        public void AddDoctor(Doctor doctor)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string insertQuery = @"
+                INSERT INTO Doctors (Nom, Prenom, NumeroRPPS, Specialite, Adresse, CodePostal, Ville, Telephone, Email)
+                VALUES (@Nom, @Prenom, @NumeroRPPS, @Specialite, @Adresse, @CodePostal, @Ville, @Telephone, @Email);
+                SELECT last_insert_rowid();";
+
+            using var command = new SQLiteCommand(insertQuery, connection);
+            command.Parameters.AddWithValue("@Nom", doctor.Nom);
+            command.Parameters.AddWithValue("@Prenom", doctor.Prenom);
+            command.Parameters.AddWithValue("@NumeroRPPS", doctor.NumeroRPPS);
+            command.Parameters.AddWithValue("@Specialite", doctor.Specialite);
+            command.Parameters.AddWithValue("@Adresse", doctor.Adresse);
+            command.Parameters.AddWithValue("@CodePostal", doctor.CodePostal);
+            command.Parameters.AddWithValue("@Ville", doctor.Ville);
+            command.Parameters.AddWithValue("@Telephone", doctor.Telephone);
+            command.Parameters.AddWithValue("@Email", doctor.Email);
+
+            doctor.Id = Convert.ToInt32(command.ExecuteScalar());
+        }
+
+        /// <summary>
+        /// Récupère tous les médecins de la base de données.
+        /// </summary>
+        public List<Doctor> GetAllDoctors()
+        {
+            var doctors = new List<Doctor>();
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string selectQuery = "SELECT * FROM Doctors ORDER BY Nom, Prenom;";
+            using var command = new SQLiteCommand(selectQuery, connection);
+            using SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                doctors.Add(new Doctor
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    Nom = reader["Nom"].ToString(),
+                    Prenom = reader["Prenom"].ToString(),
+                    NumeroRPPS = reader["NumeroRPPS"].ToString(),
+                    Specialite = reader["Specialite"].ToString(),
+                    Adresse = reader["Adresse"].ToString(),
+                    CodePostal = reader["CodePostal"].ToString(),
+                    Ville = reader["Ville"].ToString(),
+                    Telephone = reader["Telephone"].ToString(),
+                    Email = reader["Email"].ToString()
+                });
+            }
+
+            return doctors;
+        }
+
+        /// <summary>
+        /// Met à jour un médecin existant dans la base de données.
+        /// </summary>
+        public void UpdateDoctor(Doctor doctor)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string updateQuery = @"
+                UPDATE Doctors SET
+                    Nom = @Nom, Prenom = @Prenom, NumeroRPPS = @NumeroRPPS, Specialite = @Specialite,
+                    Adresse = @Adresse, CodePostal = @CodePostal, Ville = @Ville,
+                    Telephone = @Telephone, Email = @Email
+                WHERE Id = @Id;";
+
+            using var command = new SQLiteCommand(updateQuery, connection);
+            command.Parameters.AddWithValue("@Nom", doctor.Nom);
+            command.Parameters.AddWithValue("@Prenom", doctor.Prenom);
+            command.Parameters.AddWithValue("@NumeroRPPS", doctor.NumeroRPPS);
+            command.Parameters.AddWithValue("@Specialite", doctor.Specialite);
+            command.Parameters.AddWithValue("@Adresse", doctor.Adresse);
+            command.Parameters.AddWithValue("@CodePostal", doctor.CodePostal);
+            command.Parameters.AddWithValue("@Ville", doctor.Ville);
+            command.Parameters.AddWithValue("@Telephone", doctor.Telephone);
+            command.Parameters.AddWithValue("@Email", doctor.Email);
+            command.Parameters.AddWithValue("@Id", doctor.Id);
+
+            command.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Supprime un médecin de la base de données.
+        /// </summary>
+        public void DeleteDoctor(int id)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string deleteQuery = "DELETE FROM Doctors WHERE Id = @Id;";
+            using var command = new SQLiteCommand(deleteQuery, connection);
+            command.Parameters.AddWithValue("@Id", id);
+            command.ExecuteNonQuery();
+        }
+
+        #endregion
+
+        #region Gestion des Ordonnances
+
+        /// <summary>
+        /// Ajoute une nouvelle ordonnance à la base de données.
+        /// </summary>
+        public void AddPrescription(Prescription prescription)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // Insérer l'ordonnance
+                string insertPrescriptionQuery = @"
+                    INSERT INTO Prescriptions (PatientId, DoctorId, DatePrescription, Observations, Renouvelable, NombreRenouvellements)
+                    VALUES (@PatientId, @DoctorId, @DatePrescription, @Observations, @Renouvelable, @NombreRenouvellements);
+                    SELECT last_insert_rowid();";
+
+                using var command = new SQLiteCommand(insertPrescriptionQuery, connection, transaction);
+                command.Parameters.AddWithValue("@PatientId", prescription.PatientId);
+                command.Parameters.AddWithValue("@DoctorId", prescription.DoctorId);
+                command.Parameters.AddWithValue("@DatePrescription", prescription.DatePrescription.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@Observations", prescription.Observations ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Renouvelable", prescription.Renouvelable ? 1 : 0);
+                command.Parameters.AddWithValue("@NombreRenouvellements", prescription.NombreRenouvellements ?? (object)DBNull.Value);
+
+                prescription.Id = Convert.ToInt32(command.ExecuteScalar());
+
+                // Insérer les éléments de l'ordonnance
+                foreach (var item in prescription.Items)
+                {
+                    AddPrescriptionItem(item, prescription.Id, connection, transaction);
+                }
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Ajoute un élément d'ordonnance (usage interne avec transaction).
+        /// </summary>
+        private void AddPrescriptionItem(PrescriptionItem item, int prescriptionId, SQLiteConnection connection, SQLiteTransaction transaction)
+        {
+            string insertQuery = @"
+                INSERT INTO PrescriptionItems (PrescriptionId, BenzodiazepineId, NomMedicament, Dosage, Posologie,
+                    DureeTraitementJours, QuantitePrescrite, Instructions)
+                VALUES (@PrescriptionId, @BenzodiazepineId, @NomMedicament, @Dosage, @Posologie,
+                    @DureeTraitementJours, @QuantitePrescrite, @Instructions);
+                SELECT last_insert_rowid();";
+
+            using var command = new SQLiteCommand(insertQuery, connection, transaction);
+            command.Parameters.AddWithValue("@PrescriptionId", prescriptionId);
+            command.Parameters.AddWithValue("@BenzodiazepineId", item.BenzodiazepineId ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@NomMedicament", item.NomMedicament);
+            command.Parameters.AddWithValue("@Dosage", item.Dosage);
+            command.Parameters.AddWithValue("@Posologie", item.Posologie);
+            command.Parameters.AddWithValue("@DureeTraitementJours", item.DureeTraitementJours);
+            command.Parameters.AddWithValue("@QuantitePrescrite", item.QuantitePrescrite);
+            command.Parameters.AddWithValue("@Instructions", item.Instructions ?? (object)DBNull.Value);
+
+            item.Id = Convert.ToInt32(command.ExecuteScalar());
+        }
+
+        /// <summary>
+        /// Récupère toutes les ordonnances de la base de données.
+        /// </summary>
+        public List<Prescription> GetAllPrescriptions()
+        {
+            var prescriptions = new List<Prescription>();
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string selectQuery = @"
+                SELECT p.*,
+                    pat.Nom as PatientNom, pat.Prenom as PatientPrenom, pat.DateNaissance as PatientDateNaissance,
+                    pat.NumeroSecuriteSociale, pat.Adresse as PatientAdresse, pat.CodePostal as PatientCodePostal,
+                    pat.Ville as PatientVille, pat.Telephone as PatientTelephone,
+                    doc.Nom as DoctorNom, doc.Prenom as DoctorPrenom, doc.NumeroRPPS, doc.Specialite,
+                    doc.Adresse as DoctorAdresse, doc.CodePostal as DoctorCodePostal, doc.Ville as DoctorVille,
+                    doc.Telephone as DoctorTelephone, doc.Email as DoctorEmail
+                FROM Prescriptions p
+                INNER JOIN Patients pat ON p.PatientId = pat.Id
+                INNER JOIN Doctors doc ON p.DoctorId = doc.Id
+                ORDER BY p.DatePrescription DESC;";
+
+            using var command = new SQLiteCommand(selectQuery, connection);
+            using SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var prescription = new Prescription
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    PatientId = Convert.ToInt32(reader["PatientId"]),
+                    DoctorId = Convert.ToInt32(reader["DoctorId"]),
+                    DatePrescription = DateTime.Parse(reader["DatePrescription"].ToString()),
+                    Observations = reader["Observations"].ToString(),
+                    Renouvelable = Convert.ToInt32(reader["Renouvelable"]) == 1,
+                    NombreRenouvellements = reader["NombreRenouvellements"] == DBNull.Value ? null : Convert.ToInt32(reader["NombreRenouvellements"]),
+                    Patient = new Patient
+                    {
+                        Id = Convert.ToInt32(reader["PatientId"]),
+                        Nom = reader["PatientNom"].ToString(),
+                        Prenom = reader["PatientPrenom"].ToString(),
+                        DateNaissance = DateTime.Parse(reader["PatientDateNaissance"].ToString()),
+                        NumeroSecuriteSociale = reader["NumeroSecuriteSociale"].ToString(),
+                        Adresse = reader["PatientAdresse"].ToString(),
+                        CodePostal = reader["PatientCodePostal"].ToString(),
+                        Ville = reader["PatientVille"].ToString(),
+                        Telephone = reader["PatientTelephone"].ToString()
+                    },
+                    Doctor = new Doctor
+                    {
+                        Id = Convert.ToInt32(reader["DoctorId"]),
+                        Nom = reader["DoctorNom"].ToString(),
+                        Prenom = reader["DoctorPrenom"].ToString(),
+                        NumeroRPPS = reader["NumeroRPPS"].ToString(),
+                        Specialite = reader["Specialite"].ToString(),
+                        Adresse = reader["DoctorAdresse"].ToString(),
+                        CodePostal = reader["DoctorCodePostal"].ToString(),
+                        Ville = reader["DoctorVille"].ToString(),
+                        Telephone = reader["DoctorTelephone"].ToString(),
+                        Email = reader["DoctorEmail"].ToString()
+                    }
+                };
+
+                // Charger les éléments de l'ordonnance
+                prescription.Items = GetPrescriptionItems(prescription.Id);
+
+                prescriptions.Add(prescription);
+            }
+
+            return prescriptions;
+        }
+
+        /// <summary>
+        /// Récupère les éléments d'une ordonnance spécifique.
+        /// </summary>
+        private List<PrescriptionItem> GetPrescriptionItems(int prescriptionId)
+        {
+            var items = new List<PrescriptionItem>();
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+            string selectQuery = "SELECT * FROM PrescriptionItems WHERE PrescriptionId = @PrescriptionId;";
+            using var command = new SQLiteCommand(selectQuery, connection);
+            command.Parameters.AddWithValue("@PrescriptionId", prescriptionId);
+            using SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                items.Add(new PrescriptionItem
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    PrescriptionId = Convert.ToInt32(reader["PrescriptionId"]),
+                    BenzodiazepineId = reader["BenzodiazepineId"] == DBNull.Value ? null : Convert.ToInt32(reader["BenzodiazepineId"]),
+                    NomMedicament = reader["NomMedicament"].ToString(),
+                    Dosage = reader["Dosage"].ToString(),
+                    Posologie = reader["Posologie"].ToString(),
+                    DureeTraitementJours = Convert.ToInt32(reader["DureeTraitementJours"]),
+                    QuantitePrescrite = Convert.ToInt32(reader["QuantitePrescrite"]),
+                    Instructions = reader["Instructions"].ToString()
+                });
+            }
+
+            return items;
+        }
+
+        /// <summary>
+        /// Met à jour une ordonnance existante dans la base de données.
+        /// </summary>
+        public void UpdatePrescription(Prescription prescription)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // Mettre à jour l'ordonnance
+                string updateQuery = @"
+                    UPDATE Prescriptions SET
+                        PatientId = @PatientId, DoctorId = @DoctorId, DatePrescription = @DatePrescription,
+                        Observations = @Observations, Renouvelable = @Renouvelable, NombreRenouvellements = @NombreRenouvellements
+                    WHERE Id = @Id;";
+
+                using var command = new SQLiteCommand(updateQuery, connection, transaction);
+                command.Parameters.AddWithValue("@PatientId", prescription.PatientId);
+                command.Parameters.AddWithValue("@DoctorId", prescription.DoctorId);
+                command.Parameters.AddWithValue("@DatePrescription", prescription.DatePrescription.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@Observations", prescription.Observations ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Renouvelable", prescription.Renouvelable ? 1 : 0);
+                command.Parameters.AddWithValue("@NombreRenouvellements", prescription.NombreRenouvellements ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Id", prescription.Id);
+                command.ExecuteNonQuery();
+
+                // Supprimer les anciens éléments
+                string deleteItemsQuery = "DELETE FROM PrescriptionItems WHERE PrescriptionId = @PrescriptionId;";
+                using var deleteCommand = new SQLiteCommand(deleteItemsQuery, connection, transaction);
+                deleteCommand.Parameters.AddWithValue("@PrescriptionId", prescription.Id);
+                deleteCommand.ExecuteNonQuery();
+
+                // Insérer les nouveaux éléments
+                foreach (var item in prescription.Items)
+                {
+                    AddPrescriptionItem(item, prescription.Id, connection, transaction);
+                }
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Supprime une ordonnance de la base de données.
+        /// </summary>
+        public void DeletePrescription(int id)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // Supprimer les éléments de l'ordonnance
+                string deleteItemsQuery = "DELETE FROM PrescriptionItems WHERE PrescriptionId = @PrescriptionId;";
+                using var deleteItemsCommand = new SQLiteCommand(deleteItemsQuery, connection, transaction);
+                deleteItemsCommand.Parameters.AddWithValue("@PrescriptionId", id);
+                deleteItemsCommand.ExecuteNonQuery();
+
+                // Supprimer l'ordonnance
+                string deleteQuery = "DELETE FROM Prescriptions WHERE Id = @Id;";
+                using var command = new SQLiteCommand(deleteQuery, connection, transaction);
+                command.Parameters.AddWithValue("@Id", id);
+                command.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        #endregion
     }
 }
