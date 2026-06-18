@@ -7,14 +7,14 @@ using BenzodiazepineManagement.Models;
 namespace BenzodiazepineManagement.Data
 {
     /// <summary>
-    /// Gestionnaire pour les opérations de base de données SQLite.
+    /// Gestionnaire d'accès aux données SQLite pour les benzodiazépines.
     /// </summary>
     public class DatabaseManager
     {
         private readonly string _connectionString;
 
         /// <summary>
-        /// Initialise une nouvelle instance de la classe <see cref="DatabaseManager"/>.
+        /// Initialise une nouvelle instance de <see cref="DatabaseManager"/> avec le chemin du fichier de base de données.
         /// </summary>
         /// <param name="databasePath">Chemin vers le fichier de base de données SQLite.</param>
         public DatabaseManager(string databasePath)
@@ -24,7 +24,7 @@ namespace BenzodiazepineManagement.Data
         }
 
         /// <summary>
-        /// Initialise la base de données en créant la table si elle n'existe pas.
+        /// Initialise la base de données en créant la table des benzodiazépines si elle n'existe pas.
         /// </summary>
         private void InitializeDatabase()
         {
@@ -36,26 +36,26 @@ namespace BenzodiazepineManagement.Data
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     OfficialName TEXT NOT NULL,
                     MoleculeName TEXT NOT NULL,
-                    PharmacologicalProperties TEXT NOT NULL,
-                    HalfLife TEXT NOT NULL,
-                    OnsetTime TEXT NOT NULL,
-                    Bioavailability TEXT,
+                    PharmacologicalProperties TEXT NOT NULL,  -- stocké en JSON
+                    HalfLife TEXT NOT NULL,                    -- stocké en JSON (ValueRange)
+                    OnsetTime TEXT NOT NULL,                   -- stocké en JSON (ValueRange)
+                    Bioavailability TEXT,                     -- stocké en JSON (ValueRange)
                     Metabolism TEXT,
                     Elimination TEXT,
-                    ActionDurationHours TEXT,
-                    TherapeuticIndications TEXT,
+                    ActionDurationHours TEXT,                 -- stocké en JSON (ValueRange)
+                    TherapeuticIndications TEXT,              -- stocké en JSON (List<string>)
                     Dosage TEXT,
                     ImagePath TEXT
                 );";
-
+            // Création de la table si non existante
             using var command = new SQLiteCommand(createTableQuery, connection);
             command.ExecuteNonQuery();
         }
 
         /// <summary>
-        /// Ajoute une nouvelle benzodiazépine à la base de données.
+        /// Ajoute une nouvelle benzodiazépine dans la base de données.
         /// </summary>
-        /// <param name="benzo">L'objet benzodiazépine à ajouter.</param>
+        /// <param name="benzo">Objet Benzodiazepine à insérer.</param>
         public void AddBenzodiazepine(Benzodiazepine benzo)
         {
             using var connection = new SQLiteConnection(_connectionString);
@@ -65,13 +65,15 @@ namespace BenzodiazepineManagement.Data
                 INSERT INTO Benzodiazepines (
                     OfficialName, MoleculeName, PharmacologicalProperties, HalfLife, OnsetTime,
                     Bioavailability, Metabolism, Elimination, ActionDurationHours, TherapeuticIndications,
-                    Dosage, ImagePath)
-                VALUES (
+                    Dosage, ImagePath
+                ) VALUES (
                     @OfficialName, @MoleculeName, @PharmacologicalProperties, @HalfLife, @OnsetTime,
                     @Bioavailability, @Metabolism, @Elimination, @ActionDurationHours, @TherapeuticIndications,
-                    @Dosage, @ImagePath);";
+                    @Dosage, @ImagePath
+                );";
 
             using var command = new SQLiteCommand(insertQuery, connection);
+            // Les propriétés complexes (listes, objets ValueRange) sont sérialisées en JSON pour stockage
             command.Parameters.AddWithValue("@OfficialName", benzo.OfficialName);
             command.Parameters.AddWithValue("@MoleculeName", benzo.MoleculeName);
             command.Parameters.AddWithValue("@PharmacologicalProperties", JsonConvert.SerializeObject(benzo.PharmacologicalProperties));
@@ -83,15 +85,15 @@ namespace BenzodiazepineManagement.Data
             command.Parameters.AddWithValue("@ActionDurationHours", JsonConvert.SerializeObject(benzo.ActionDurationHours));
             command.Parameters.AddWithValue("@TherapeuticIndications", JsonConvert.SerializeObject(benzo.TherapeuticIndications));
             command.Parameters.AddWithValue("@Dosage", benzo.Dosage);
-            command.Parameters.AddWithValue("@ImagePath", benzo.ImagePath);
+            command.Parameters.AddWithValue("@ImagePath", benzo.ImagePath ?? string.Empty);
 
             command.ExecuteNonQuery();
         }
 
         /// <summary>
-        /// Récupère toutes les benzodiazépines de la base de données.
+        /// Récupère toutes les benzodiazépines depuis la base de données.
         /// </summary>
-        /// <returns>Liste des benzodiazépines.</returns>
+        /// <returns>Liste de toutes les benzodiazépines stockées.</returns>
         public List<Benzodiazepine> GetAllBenzodiazepines()
         {
             var benzodiazepines = new List<Benzodiazepine>();
@@ -104,6 +106,7 @@ namespace BenzodiazepineManagement.Data
 
             while (reader.Read())
             {
+                // Désérialisation des champs JSON en objets C#
                 var benzo = new Benzodiazepine
                 {
                     Id = Convert.ToInt32(reader["Id"]),
@@ -129,7 +132,7 @@ namespace BenzodiazepineManagement.Data
         /// <summary>
         /// Met à jour une benzodiazépine existante dans la base de données.
         /// </summary>
-        /// <param name="benzo">L'objet benzodiazépine à mettre à jour.</param>
+        /// <param name="benzo">Objet benzodiazépine avec les nouvelles valeurs (doit avoir un Id valide).</param>
         public void UpdateBenzodiazepine(Benzodiazepine benzo)
         {
             using var connection = new SQLiteConnection(_connectionString);
@@ -163,16 +166,16 @@ namespace BenzodiazepineManagement.Data
             command.Parameters.AddWithValue("@ActionDurationHours", JsonConvert.SerializeObject(benzo.ActionDurationHours));
             command.Parameters.AddWithValue("@TherapeuticIndications", JsonConvert.SerializeObject(benzo.TherapeuticIndications));
             command.Parameters.AddWithValue("@Dosage", benzo.Dosage);
-            command.Parameters.AddWithValue("@ImagePath", benzo.ImagePath);
+            command.Parameters.AddWithValue("@ImagePath", benzo.ImagePath ?? string.Empty);
             command.Parameters.AddWithValue("@Id", benzo.Id);
 
             command.ExecuteNonQuery();
         }
 
         /// <summary>
-        /// Supprime une benzodiazépine de la base de données.
+        /// Supprime une benzodiazépine de la base de données par son identifiant.
         /// </summary>
-        /// <param name="id">Identifiant de la benzodiazépine à supprimer.</param>
+        /// <param name="id">Id de la benzodiazépine à supprimer.</param>
         public void DeleteBenzodiazepine(int id)
         {
             using var connection = new SQLiteConnection(_connectionString);
@@ -185,31 +188,22 @@ namespace BenzodiazepineManagement.Data
         }
 
         /// <summary>
-        /// Désérialise une valeur depuis la base de données ou retourne une valeur par défaut.
+        /// Désérialise un champ JSON depuis la base de données ou retourne une valeur par défaut si échec.
         /// </summary>
-        /// <typeparam name="T">Type de l'objet à désérialiser.</typeparam>
-        /// <param name="data">Données à désérialiser.</param>
-        /// <returns>Objet désérialisé ou valeur par défaut.</returns>
         private T DeserializeOrDefault<T>(object data)
         {
             if (data == null || data == DBNull.Value || string.IsNullOrWhiteSpace(data.ToString()))
             {
-                return default(T);
+                return default;
             }
-
             try
             {
                 return JsonConvert.DeserializeObject<T>(data.ToString());
             }
             catch (Exception ex)
             {
-                // Afficher le message d'erreur pour le débogage
+                // En cas d'erreur de désérialisation, on peut logguer l'erreur et retourner une valeur par défaut
                 System.Diagnostics.Debug.WriteLine($"Erreur lors de la désérialisation de {typeof(T).Name}: {ex.Message}");
-                
-                // Vous pouvez également enregistrer l'erreur dans un fichier de log ou afficher un message à l'utilisateur
-                // throw; // Vous pouvez lever l'exception si vous souhaitez arrêter le programme
-
-                // Retourner une valeur par défaut appropriée
                 if (typeof(T) == typeof(ValueRange))
                 {
                     return (T)(object)new ValueRange();
@@ -224,7 +218,7 @@ namespace BenzodiazepineManagement.Data
                 }
                 else
                 {
-                    return default(T);
+                    return default;
                 }
             }
         }

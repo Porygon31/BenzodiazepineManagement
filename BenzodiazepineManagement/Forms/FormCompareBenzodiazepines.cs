@@ -43,7 +43,7 @@ namespace BenzodiazepineManagement.Forms
         /// <summary>
         /// Événement déclenché lors de la sélection d'une benzodiazépine dans la première ComboBox.
         /// </summary>
-        private void comboBoxBenzo1_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxBenzo1_SelectedIndexChanged(object sender, EventArgs e)
         {
             var selectedBenzo = (Benzodiazepine)comboBoxBenzo1.SelectedItem;
             DisplayBenzoDetails(selectedBenzo, isFirst: true);
@@ -52,7 +52,7 @@ namespace BenzodiazepineManagement.Forms
         /// <summary>
         /// Événement déclenché lors de la sélection d'une benzodiazépine dans la deuxième ComboBox.
         /// </summary>
-        private void comboBoxBenzo2_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxBenzo2_SelectedIndexChanged(object sender, EventArgs e)
         {
             var selectedBenzo = (Benzodiazepine)comboBoxBenzo2.SelectedItem;
             DisplayBenzoDetails(selectedBenzo, isFirst: false);

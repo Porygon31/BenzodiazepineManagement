@@ -65,7 +65,7 @@
             comboBoxBenzo1.Name = "comboBoxBenzo1";
             comboBoxBenzo1.Size = new Size(340, 28);
             comboBoxBenzo1.TabIndex = 0;
-            comboBoxBenzo1.SelectedIndexChanged += comboBoxBenzo1_SelectedIndexChanged;
+            comboBoxBenzo1.SelectedIndexChanged += ComboBoxBenzo1_SelectedIndexChanged;
             // 
             // comboBoxBenzo2
             // 
@@ -74,7 +74,7 @@
             comboBoxBenzo2.Name = "comboBoxBenzo2";
             comboBoxBenzo2.Size = new Size(457, 28);
             comboBoxBenzo2.TabIndex = 1;
-            comboBoxBenzo2.SelectedIndexChanged += comboBoxBenzo2_SelectedIndexChanged;
+            comboBoxBenzo2.SelectedIndexChanged += ComboBoxBenzo2_SelectedIndexChanged;
             // 
             // lblOfficialName1
             // 
