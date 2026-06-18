@@ -33,7 +33,6 @@
             btnEdit = new Button();
             btnDelete = new Button();
             btnCompare = new Button();
-            btnPrescriptions = new Button();
             txtSearch = new TextBox();
             lblSearch = new Label();
             lblOfficialName = new Label();
@@ -81,19 +80,19 @@
             btnEdit.Text = "Editer";
             btnEdit.UseVisualStyleBackColor = true;
             btnEdit.Click += btnEdit_Click;
-            //
+            // 
             // btnDelete
-            //
-            btnDelete.Location = new Point(1731, 828);
+            // 
+            btnDelete.Location = new Point(1731, 748);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(164, 42);
             btnDelete.TabIndex = 3;
             btnDelete.Text = "Supprimer";
             btnDelete.UseVisualStyleBackColor = true;
             btnDelete.Click += btnDelete_Click;
-            //
+            // 
             // btnCompare
-            //
+            // 
             btnCompare.Location = new Point(1731, 667);
             btnCompare.Name = "btnCompare";
             btnCompare.Size = new Size(164, 42);
@@ -101,16 +100,6 @@
             btnCompare.Text = "Commparer Benzo";
             btnCompare.UseVisualStyleBackColor = true;
             btnCompare.Click += btnCompare_Click;
-            //
-            // btnPrescriptions
-            //
-            btnPrescriptions.Location = new Point(1731, 748);
-            btnPrescriptions.Name = "btnPrescriptions";
-            btnPrescriptions.Size = new Size(164, 42);
-            btnPrescriptions.TabIndex = 5;
-            btnPrescriptions.Text = "Ordonnances";
-            btnPrescriptions.UseVisualStyleBackColor = true;
-            btnPrescriptions.Click += btnPrescriptions_Click;
             // 
             // txtSearch
             // 
@@ -255,7 +244,6 @@
             Controls.Add(lblOfficialName);
             Controls.Add(lblSearch);
             Controls.Add(txtSearch);
-            Controls.Add(btnPrescriptions);
             Controls.Add(btnCompare);
             Controls.Add(btnDelete);
             Controls.Add(btnEdit);
@@ -277,7 +265,6 @@
         private Button btnEdit;
         private Button btnDelete;
         private Button btnCompare;
-        private Button btnPrescriptions;
         private TextBox txtSearch;
         private Label lblSearch;
         private Label lblOfficialName;
